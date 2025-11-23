@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.account.permission
 
-import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -20,9 +18,9 @@ import com.bitshares.oases.ui.base.startAccountPicker
 import bitshareskit.chain.Authority
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import modulon.component.ComponentCell
-import modulon.component.IconSize
-import modulon.component.buttonStyle
+import modulon.component.cell.ComponentCell
+import modulon.component.cell.IconSize
+import modulon.component.cell.buttonStyle
 import modulon.dialog.button
 import modulon.dialog.dismissWith
 import modulon.dialog.doOnDismiss
@@ -36,7 +34,7 @@ import modulon.extensions.text.toStringOrEmpty
 import modulon.extensions.view.*
 import modulon.extensions.viewbinder.cell
 import modulon.extensions.viewbinder.hint
-import modulon.layout.recycler.*
+import modulon.layout.lazy.*
 
 class PermissionFragment_Tabs : ContainerFragment() {
 
@@ -52,8 +50,7 @@ class PermissionFragment_Tabs : ContainerFragment() {
 
     private val viewModel: PermissionViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
 
         if (tab == Tabs.CLOUD_WALLET) setupRecycler {
             section {
@@ -183,7 +180,7 @@ class PermissionFragment_Tabs : ContainerFragment() {
                     }
                     distinctItemsBy { it.first.address }
                     distinctContentBy { it }
-                    keySource.observe(viewLifecycleOwner) { adapter.submitList(it) }
+                    keySource.observe(viewLifecycleOwner) { submitList(it) }
                 }
                 cell {
                     buttonStyle()

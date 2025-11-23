@@ -9,16 +9,14 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.commit
-import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.map
-import androidx.lifecycle.observe
+import androidx.lifecycle.*
 import com.bitshares.oases.R
 import com.bitshares.oases.globalPreferenceManager
 import com.bitshares.oases.globalWalletManager
 import com.bitshares.oases.netowrk.java_websocket.NetworkService
 import com.bitshares.oases.netowrk.java_websocket.WebSocketState
 import com.bitshares.oases.preference.DarkMode
-import com.bitshares.oases.ui.settings.node.NodeSettingsFragment
+import com.bitshares.oases.ui.settings.network.NetworkSettingsFragment
 import com.bitshares.oases.ui.wallet.WalletSettingsFragment
 import com.bitshares.oases.ui.wallet.startWalletUnlock
 import kotlinx.coroutines.CoroutineScope
@@ -29,8 +27,8 @@ import modulon.extensions.view.doOnClick
 import modulon.extensions.view.doOnLongClick
 import modulon.extensions.view.ensuredViewId
 import modulon.extensions.view.parentViewGroup
-import modulon.layout.actionbar.ActionBarLayout
-import modulon.layout.actionbar.menu
+import modulon.component.appbar.AppbarView
+import modulon.component.appbar.menu
 import modulon.union.UnionFragment
 
 abstract class BaseFragment : UnionFragment() {
@@ -54,7 +52,7 @@ abstract class BaseFragment : UnionFragment() {
     // TODO: 2022/2/19 move to extensions
 
 
-    fun ActionBarLayout.titleConnectionState(text: CharSequence) {
+    fun AppbarView.titleConnectionState(text: CharSequence) {
         title = text
         NetworkService.connectionState.map {
             when (it) {
@@ -65,7 +63,7 @@ abstract class BaseFragment : UnionFragment() {
         }.distinctUntilChanged().observe { title = it }
     }
 
-    fun ActionBarLayout.networkStateMenuInternal() = menu {
+    fun AppbarView.websocketStateMenuInternal() = menu {
         text = "Network State"
         isVisible = false
         globalPreferenceManager.INDICATOR.observe(viewLifecycleOwner) { isVisible = it }
@@ -82,44 +80,43 @@ abstract class BaseFragment : UnionFragment() {
             interpolator = LinearInterpolator()
             repeatCount = ObjectAnimator.INFINITE
         }
-
-        NetworkService.connectionState.distinctUntilChanged().observe(viewLifecycleOwner) {
-            when (it) {
-                WebSocketState.CONNECTING -> run {
-                    if (icon != connecting) {
-                        icon = connecting
-                        oa.start()
-                    }
-                }
-                WebSocketState.CONNECTED, WebSocketState.MESSAGING -> run {
-                    if (icon != connected) {
-                        connecting.reset()
-                        connected.reset()
-                        closed.reset()
-                        icon = connected
-                        startAnimation()
-                        oa.cancel()
-                        iconView.rotation = 0f
-                    }
-                }
-                WebSocketState.CLOSED -> run {
-                    if (icon != closed) {
-                        connecting.reset()
-                        connected.reset()
-                        closed.reset()
-                        icon = closed
-                        startAnimation()
-                        oa.cancel()
-                        iconView.rotation = 0f
-                    }
-                }
-            }
-        }
-        doOnClick { startFragment<NodeSettingsFragment>() }
-        doOnLongClick { startFragment<NodeSettingsFragment>() }
+//        globalWebsocketManager.state.asLiveData().observe(viewLifecycleOwner) {
+//            when (it) {
+//                GrapheneClient.State.Connecting -> run {
+//                    if (icon != connecting) {
+//                        icon = connecting
+//                        oa.start()
+//                    }
+//                }
+//                GrapheneClient.State.Connected -> run {
+//                    if (icon != connected) {
+//                        connecting.reset()
+//                        connected.reset()
+//                        closed.reset()
+//                        icon = connected
+//                        startAnimation()
+//                        oa.cancel()
+//                        iconView.rotation = 0f
+//                    }
+//                }
+//                GrapheneClient.State.Closed -> run {
+//                    if (icon != closed) {
+//                        connecting.reset()
+//                        connected.reset()
+//                        closed.reset()
+//                        icon = closed
+//                        startAnimation()
+//                        oa.cancel()
+//                        iconView.rotation = 0f
+//                    }
+//                }
+//            }
+//        }
+        doOnClick { startFragment<NetworkSettingsFragment>() }
+        doOnLongClick { startFragment<NetworkSettingsFragment>() }
     }
 
-    fun ActionBarLayout.walletStateMenu() = menu {
+    fun AppbarView.walletStateMenu() = menu {
         text = "Network State"
         isVisible = false
         globalPreferenceManager.INDICATOR.observe(viewLifecycleOwner) { isVisible = it }
@@ -157,11 +154,11 @@ abstract class BaseFragment : UnionFragment() {
 
     }
 
-    fun ActionBarLayout.networkStateMenu() {
-        networkStateMenuInternal()
+    fun AppbarView.websocketStateMenu() {
+        websocketStateMenuInternal()
     }
 
-    fun ActionBarLayout.broadcastMenu(block: ActionBarLayout.Item.() -> Unit) = menu {
+    fun AppbarView.broadcastMenu(block: AppbarView.Item.() -> Unit) = menu {
         text = "Transaction Broadcast"
         icon = R.drawable.ic_test_outline_done_24.contextDrawable()
         isClickable = false

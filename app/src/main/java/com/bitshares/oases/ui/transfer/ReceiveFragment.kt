@@ -1,18 +1,15 @@
 package com.bitshares.oases.ui.transfer
 
-import android.os.Bundle
-import android.view.View
 import com.bitshares.oases.ui.base.ContainerFragment
 import modulon.extensions.viewbinder.cell
-import modulon.layout.recycler.section
+import modulon.layout.lazy.section
 
 class ReceiveFragment : ContainerFragment() {
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupAction {
             titleConnectionState("Receive")
-            networkStateMenu()
+            websocketStateMenu()
             walletStateMenu()
         }
         setupRecycler {

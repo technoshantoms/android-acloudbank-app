@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
-import bitshareskit.extensions.logcat
 import bitshareskit.objects.AssetObject
 import com.bitshares.oases.R
 import com.bitshares.oases.chain.IntentParameters
@@ -18,24 +17,24 @@ import modulon.dialog.doOnDismiss
 import modulon.dialog.section
 import modulon.extensions.compat.arguments
 import modulon.extensions.compat.showBottomDialog
+import modulon.extensions.stdlib.logcat
 import modulon.extensions.view.*
 import modulon.extensions.viewbinder.cell
 import modulon.extensions.viewbinder.nestedScrollableHost
 import modulon.extensions.viewbinder.pagerLayout
 import modulon.extensions.viewbinder.tabLayout
-import modulon.layout.tab.tab
+import modulon.component.tab.tab
 
 class MarketFragment : ContainerFragment() {
 
     private val viewModel: MarketViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupVertical {
             tabLayout {
                 viewModel.marketGroupInternal.observe(viewLifecycleOwner) {
                     removeAllTabs()
-                    logcat("[ui_trace] viewModel.marketGroupInternal.observe(viewLifecycleOwner) removeAllTabs()")
+                    "removeAllTabs()".logcat()
                     tab { text = context.getString(R.string.market_all_groups) }
                     it.forEach {
                         tab {
@@ -55,6 +54,8 @@ class MarketFragment : ContainerFragment() {
                 viewModel.selectedMarket.observe(viewLifecycleOwner) { selectTab(it) }
             }
             nestedScrollableHost {
+                layoutWidth = MATCH_PARENT
+                layoutHeight = MATCH_PARENT
                 pagerLayout {
                     offscreenPageLimit = 2
                     viewModel.selectedMarket.observe { currentItem = it }
@@ -64,7 +65,6 @@ class MarketFragment : ContainerFragment() {
                         }
                     }
                 }
-                setParamsFill()
             }
         }
     }

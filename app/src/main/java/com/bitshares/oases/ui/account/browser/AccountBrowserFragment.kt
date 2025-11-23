@@ -1,8 +1,6 @@
 package com.bitshares.oases.ui.account.browser
 
 import android.graphics.drawable.AnimatedVectorDrawable
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import com.bitshares.oases.R
 import com.bitshares.oases.ui.account.AccountViewModel
@@ -19,8 +17,8 @@ import modulon.extensions.view.nextView
 import modulon.extensions.viewbinder.cell
 import modulon.extensions.viewbinder.pagerLayout
 import modulon.extensions.viewbinder.tabLayout
-import modulon.layout.actionbar.menu
-import modulon.layout.actionbar.subtitle
+import modulon.component.appbar.menu
+import modulon.component.appbar.subtitle
 import java.util.*
 
 class AccountBrowserFragment : ContainerFragment() {
@@ -39,14 +37,12 @@ class AccountBrowserFragment : ContainerFragment() {
         RAW(R.string.tab_raw_data),
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onCreateView() {
         // TODO: 2022/2/17  distinct between fragments
 //        secureWindow()
         setupAction {
             titleConnectionState(context.getString(R.string.account_browser_title))
-            networkStateMenu()
+            websocketStateMenu()
             walletStateMenu()
             menu {
                 text = context.getString(R.string.account_observe)

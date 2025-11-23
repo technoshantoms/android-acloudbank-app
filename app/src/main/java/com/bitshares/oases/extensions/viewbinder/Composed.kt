@@ -17,11 +17,10 @@ import modulon.extensions.graphics.createRoundRectSelectorDrawable
 import modulon.extensions.livedata.combineNonNull
 import modulon.extensions.livedata.mapSuspend
 import modulon.extensions.view.*
-import modulon.extensions.viewbinder.cell
-import modulon.extensions.viewbinder.spacer
-import modulon.extensions.viewbinder.frameLayout
-import modulon.layout.recycler.RecyclerLayout
-import modulon.layout.recycler.section
+import modulon.extensions.viewbinder.*
+import modulon.layout.lazy.LazyListView
+import modulon.layout.lazy.section
+import modulon.layout.linear.HorizontalView
 import modulon.union.Union
 import modulon.widget.PlainTextView
 
@@ -45,17 +44,27 @@ fun ViewGroup.feeCell(union: Union, transactionBuilder: LiveData<TransactionBuil
     }
 }
 
-fun RecyclerLayout.logo() {
+fun LazyListView.logo() {
     section {
-        frameLayout {
+        isolated<HorizontalView> {
             backgroundTintColor = context.getColor(R.color.transparent)
+            spacer {
+                layoutWidth = 0
+                layoutWeightLinear = 1f
+            }
             view<ImageView> {
                 imageDrawable = R.drawable.ic_bitshares_logo.contextDrawable().apply {
                     mutate()
                     setTint(context.getColor(R.color.background_cover))
                 }
                 updatePadding(24.dp, 28.dp, 24.dp, 32.dp)
-                setFrameParams(240.dp, 140.dp, gravity = Gravity.CENTER_HORIZONTAL)
+                layoutWidth = MATCH_PARENT
+                layoutHeight = 140.dp
+                layoutGravityFrame = Gravity.CENTER
+            }
+            spacer {
+                layoutWidth = 0
+                layoutWeightLinear = 1f
             }
         }
     }

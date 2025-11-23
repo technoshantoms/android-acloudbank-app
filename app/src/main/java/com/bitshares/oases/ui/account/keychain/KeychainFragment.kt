@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.account.keychain
 
-import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -21,8 +19,8 @@ import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.wallet.startWalletUnlock
 import bitshareskit.chain.Authority
 import kotlinx.coroutines.launch
-import modulon.component.ComponentCell
-import modulon.component.buttonStyle
+import modulon.component.cell.ComponentCell
+import modulon.component.cell.buttonStyle
 import modulon.dialog.button
 import modulon.dialog.doOnDismiss
 import modulon.dialog.section
@@ -40,23 +38,22 @@ import modulon.extensions.view.updatePaddingVerticalHalf
 import modulon.extensions.view.updatePaddingVerticalV6
 import modulon.extensions.viewbinder.cell
 import modulon.extensions.viewbinder.hint
-import modulon.layout.actionbar.subtitle
-import modulon.layout.recycler.construct
-import modulon.layout.recycler.data
-import modulon.layout.recycler.list
-import modulon.layout.recycler.section
+import modulon.component.appbar.subtitle
+import modulon.layout.lazy.construct
+import modulon.layout.lazy.data
+import modulon.layout.lazy.list
+import modulon.layout.lazy.section
 import java.util.*
 
 class KeychainFragment : ContainerFragment() {
 
     private val viewModel: PermissionViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         secureWindow()
         setupAction {
             titleConnectionState(getString(R.string.keychain_title))
-            networkStateMenu()
+            websocketStateMenu()
             walletStateMenu()
             viewModel.accountName.observe(viewLifecycleOwner) { subtitle(it.toUpperCase(Locale.ROOT)) }
         }
@@ -118,7 +115,7 @@ class KeychainFragment : ContainerFragment() {
                             Authority.OWNER -> viewModel.ownerKeyAuthsLocalWithWeightOrEmpty
                             Authority.ACTIVE -> viewModel.activeKeyAuthsLocalWithWeightOrEmpty
                             Authority.MEMO -> viewModel.memoKeyAuthsLocalWithWeightOrEmpty
-                        }.observe(viewLifecycleOwner) { adapter.submitList(it) }
+                        }.observe(viewLifecycleOwner) { submitList(it) }
                     }
                     cell {
                         buttonStyle()

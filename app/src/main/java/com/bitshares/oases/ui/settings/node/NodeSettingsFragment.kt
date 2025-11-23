@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.settings.node
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
@@ -13,9 +11,9 @@ import com.bitshares.oases.extensions.viewbinder.bindNode
 import com.bitshares.oases.netowrk.java_websocket.WebSocketState
 import com.bitshares.oases.provider.local_repo.NodeRepository
 import com.bitshares.oases.ui.base.ContainerFragment
-import modulon.component.ComponentCell
-import modulon.component.buttonStyle
-import modulon.component.toggleEnd
+import modulon.component.cell.ComponentCell
+import modulon.component.cell.buttonStyle
+import modulon.component.cell.toggleEnd
 import modulon.dialog.button
 import modulon.dialog.section
 import modulon.extensions.compat.showBottomDialog
@@ -23,16 +21,15 @@ import modulon.extensions.compat.showSoftKeyboard
 import modulon.extensions.text.toStringOrEmpty
 import modulon.extensions.view.*
 import modulon.extensions.viewbinder.cell
-import modulon.layout.actionbar.title
-import modulon.layout.recycler.*
+import modulon.component.appbar.title
+import modulon.layout.lazy.*
 
 
 class NodeSettingsFragment : ContainerFragment() {
 
     val viewModel: NodeSettingsViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupAction {
             title(context.getString(R.string.node_settings_title))
             walletStateMenu()
@@ -113,8 +110,8 @@ class NodeSettingsFragment : ContainerFragment() {
                     }
                     distinctItemsBy { it.id }
                     distinctContentBy { it }
-                    viewModel.nodeList.observe(viewLifecycleOwner) { adapter.submitList(it) }
-                    viewModel.nodeStateList.observe(viewLifecycleOwner) { adapter.submitPayload(it) }
+                    viewModel.nodeList.observe(viewLifecycleOwner) { submitList(it) }
+                    viewModel.nodeStateList.observe(viewLifecycleOwner) { submitPayload(it) }
                 }
                 cell {
                     buttonStyle()

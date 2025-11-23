@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.asset.picker
 
-import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -13,29 +11,28 @@ import com.bitshares.oases.chain.assetSymbolFilter
 import com.bitshares.oases.extensions.viewbinder.bindAssetV3
 import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.base.putJson
-import modulon.component.ComponentCell
-import modulon.extensions.compat.finish
+import modulon.component.cell.ComponentCell
+import modulon.extensions.compat.finishActivity
 import modulon.extensions.compat.showSoftKeyboard
 import modulon.extensions.livedata.combineNonNull
 import modulon.extensions.text.toStringOrEmpty
 import modulon.extensions.view.create
 import modulon.extensions.view.doOnClick
-import modulon.layout.actionbar.SearchLayout
-import modulon.layout.actionbar.menu
-import modulon.layout.recycler.data
-import modulon.layout.recycler.distinctItemsBy
-import modulon.layout.recycler.list
-import modulon.layout.recycler.section
+import modulon.component.appbar.SearchView
+import modulon.component.appbar.menu
+import modulon.layout.lazy.data
+import modulon.layout.lazy.distinctItemsBy
+import modulon.layout.lazy.list
+import modulon.layout.lazy.section
 
 class AssetPickerFragment : ContainerFragment() {
 
     private val viewModel: AssetPickerViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupAction {
             titleConnectionState("Asset Picker")
-            actionView = create<SearchLayout> {
+            actionView = create<SearchView> {
                 queryHint = context.getString(R.string.account_picker_search)
                 fieldtextView.apply {
                     inputType = EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD or EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
@@ -60,13 +57,13 @@ class AssetPickerFragment : ContainerFragment() {
                     data {
                         bindAssetV3(it, true)
                         doOnClick {
-                            finish {
+                            finishActivity {
                                 putJson(IntentParameters.Asset.KEY_ASSET, it)
                                 putJson(IntentParameters.Asset.KEY_UID, it.uid)
                             }
                         }
                     }
-                    viewModel.searchHistoryInternal.observe(viewLifecycleOwner) { adapter.submitList(it) }
+                    viewModel.searchHistoryInternal.observe(viewLifecycleOwner) { submitList(it) }
                     // TODO: 3/11/2021 add visibility?
                     viewModel.searchState.observe(viewLifecycleOwner) {
 //                    isVisible = it == AssetPickerViewModel.State.EMPTY
@@ -77,14 +74,14 @@ class AssetPickerFragment : ContainerFragment() {
                         bindAssetV3(it, true)
                         doOnClick {
                             viewModel.addAssetHistory(it)
-                            finish {
+                            finishActivity {
                                 putJson(IntentParameters.Asset.KEY_ASSET, it)
                                 putJson(IntentParameters.Asset.KEY_UID, it.uid)
                             }
                         }
                     }
                     distinctItemsBy { it.uid }
-                    viewModel.searchResult.observe(viewLifecycleOwner) { adapter.submitList(it) }
+                    viewModel.searchResult.observe(viewLifecycleOwner) { submitList(it) }
                 }
                 combineNonNull(viewModel.searchHistorySettings, viewModel.searchState).observe(viewLifecycleOwner) { (history, state) ->
                     isVisible = history.isNotEmpty() && state == AssetPickerViewModel.State.EMPTY

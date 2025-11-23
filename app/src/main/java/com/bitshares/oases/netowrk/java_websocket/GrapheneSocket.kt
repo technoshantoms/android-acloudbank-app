@@ -2,7 +2,6 @@ package com.bitshares.oases.netowrk.java_websocket
 
 import android.util.Log
 import bitshareskit.errors.WebSocketClosedException
-import bitshareskit.extensions.logcat
 import bitshareskit.models.SocketCall
 import bitshareskit.models.SocketResponse
 import com.bitshares.oases.chain.blockchainDatabaseScope
@@ -42,6 +41,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+@Deprecated("use GrapheneClient")
 @Suppress("UNCHECKED_CAST", "UNUSED", "MemberVisibilityCanBePrivate")
 class GrapheneSocket(val node: Node, var login: Boolean = true) {
 
@@ -195,7 +195,6 @@ class GrapheneSocket(val node: Node, var login: Boolean = true) {
 
     @Synchronized
     fun connect() {
-        logcat(">>> >>> >>> START CONNECTING >>> >>> >>> ")
         changeState(WebSocketState.CONNECTING)
         socketScope.launch {
             updateNodeLatency(Node.LATENCY_CONNECTING)
@@ -280,7 +279,7 @@ class GrapheneSocket(val node: Node, var login: Boolean = true) {
                 is PongFrame -> {
                     pongTime = System.currentTimeMillis()
                     ponged = true
-                    updateNodeLatency(averageLatency.update(pongTime - pingTime).toLong())
+                    updateNodeLatency(averageLatency.update((pongTime - pingTime).toDouble()).toLong())
                     return
                 }
                 else -> SocketResponse.fromJson(message as JSONObject)
@@ -321,8 +320,8 @@ class GrapheneSocket(val node: Node, var login: Boolean = true) {
 
     private fun onSocketClose(e: Throwable) {
         if (login) {
-            Log.e(TAG, "onSocketClose: ${e.message}")
-            e.printStackTrace()
+//            Log.e(TAG, "onSocketClose: ${e.message}")
+//            e.printStackTrace()
         }
         runCatching {
             changeState(WebSocketState.CLOSED)

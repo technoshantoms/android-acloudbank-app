@@ -2,8 +2,6 @@ package com.bitshares.oases.netowrk.java_websocket
 
 import bitshareskit.errors.ErrorCode
 import bitshareskit.errors.TransactionBroadcastException
-import bitshareskit.extensions.delayMain
-import bitshareskit.extensions.logcat
 import bitshareskit.models.*
 import bitshareskit.objects.AssetObject
 import bitshareskit.objects.DynamicGlobalPropertyObject
@@ -16,12 +14,12 @@ import bitshareskit.chain.CallMethod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import modulon.extensions.charset.toHexString
 import modulon.extensions.livedata.NonNullMediatorLiveData
 import org.java_json.JSONArray
 import org.java_json.JSONObject
 import java.util.*
 
+@Deprecated("")
 class TransactionBuilder {
 
     enum class FeeState { EMPTY, CHECKING, COMPLETE, INSUFFICIENT }
@@ -140,9 +138,6 @@ class TransactionBuilder {
                 validate()
                 chainId = ChainPropertyRepository.chainId
                 transaction.sign(privateKeys)
-                logcat("TRANSACTION PFB   ${transaction.toJsonElement()} ")
-                logcat("TRANSACTION TXHEX ${transaction.toByteArray().toHexString()} ")
-                logcat("TRANSACTION OPHEX ${transaction.operations[0].toByteArray().toHexString()} ")
                 if (test) return@launch
                 TransactionRepository.broadcastTransactionWithCallback(transaction).collect { result ->
                     withContext(Dispatchers.Main) {
@@ -179,12 +174,6 @@ class TransactionBuilder {
             block == null -> throw TransactionBroadcastException(ErrorCode.MISSING_HEADER_BLOCK)
 //            privateKeys.isEmpty() -> throw TransactionBroadcastException(ErrorCode.MISSING_OTHER_AUTH)
             !isFeeCalculated && calculateFees(feeAsset).isEmpty() -> throw TransactionBroadcastException(ErrorCode.FEE_NOT_CALCULATED)
-        }
-    }
-
-    private fun startTimeoutTimer(timeout: Long = 12000L) {
-        delayMain(timeout) {
-            if (!isSuccess) failureCallbacks.forEach { it.invoke(TransactionBroadcastException(ErrorCode.BROADCAST_TIMEOUT)) }
         }
     }
 

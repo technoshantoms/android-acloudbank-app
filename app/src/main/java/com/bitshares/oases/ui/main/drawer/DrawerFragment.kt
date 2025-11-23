@@ -9,15 +9,14 @@ import android.graphics.Paint
 import android.graphics.drawable.AnimatedVectorDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
-import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.widget.ImageView
 import androidx.core.animation.doOnEnd
 import androidx.core.net.toUri
 import androidx.core.view.doOnAttach
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.activityViewModels
 import com.bitshares.oases.R
@@ -39,9 +38,9 @@ import com.bitshares.oases.ui.main.MainViewModel
 import com.bitshares.oases.ui.testlab.TestLabFragment
 import com.bitshares.oases.ui.wallet.showUserOptionDialog
 import com.bitshares.oases.ui.wallet.showUserSwitchDialog
-import modulon.component.BaseCell
-import modulon.component.ComponentPaddingCell
-import modulon.component.IconSize
+import modulon.component.cell.BaseCell
+import modulon.component.cell.ComponentPaddingCell
+import modulon.component.cell.IconSize
 import modulon.extensions.animation.doOnAnimationEnd
 import modulon.extensions.compat.startUriBrowser
 import modulon.extensions.font.typefaceBold
@@ -50,9 +49,8 @@ import modulon.extensions.graphics.createRoundRectDrawable
 import modulon.extensions.livedata.combineFirst
 import modulon.extensions.view.*
 import modulon.extensions.viewbinder.*
-import modulon.layout.linear.VerticalLayout
-import modulon.layout.recycler.construct
-import modulon.layout.recycler.expandable
+import modulon.layout.linear.VerticalView
+import modulon.layout.lazy.construct
 
 class DrawerFragment : ContainerFragment() {
 
@@ -81,36 +79,16 @@ class DrawerFragment : ContainerFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupRecycler {
             noPadding()
             verticalLayout {
-                viewRow<ComponentPaddingCell> {
+                view<ComponentPaddingCell> {
                     background = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(0x14000000, 0x00000000))
                     doOnAttach {
                         updatePadding(top = 16.dp + (rootWindowInsets?.systemWindowInsetTop ?: 0))
                     }
                     iconSize = IconSize.SIZE_9
-                    titleView.apply {
-                        setTextColor(context.getColor(R.color.cell_text_primary))
-                        textSize = 16f
-                        typeface = typefaceBold
-                        isAllCaps = true
-                        startScrolling()
-                        updatePadding(top = context.resources.getDimensionPixelSize(R.dimen.navigation_drawer_top_offset))
-                    }
-                    subtextView.apply {
-                        setTextColor(context.getColor(R.color.cell_text_secondary))
-                        textSize = 14f
-                        isAllCaps = true
-                        text = context.getString(R.string.import_no_id_hint)
-                    }
-                    iconView.apply {
-                        val backgroundColor = context.getColor(R.color.drawer_background_avatar)
-                        val backgroundRadius = context.resources.getDimension(iconSize.size) / 10
-                        background = createRoundRectDrawable(backgroundColor, backgroundRadius)
-                    }
                     val expander = R.drawable.ic_arrow_closed.contextDrawable() as AnimatedVectorDrawable
                     val closer = R.drawable.ic_arrow_expanded.contextDrawable() as AnimatedVectorDrawable
                     val imageView = ImageView(context).apply {
@@ -126,16 +104,35 @@ class DrawerFragment : ContainerFragment() {
                         }
                         setBackgroundDrawable(expander)
                     }
-
                     setPadding(24.dp, 16.dp, 24.dp, 16.dp)
                     title = context.getString(R.string.import_no_account_hint)
                     subtext = context.getString(R.string.import_no_id_hint)
                     verticalLayout {
-                        addWrap(iconView, context.resources.getDimensionPixelSize(iconSize.size), context.resources.getDimensionPixelSize(iconSize.size))
-                        addRow(titleView)
-                        addRow(subtextView)
+                        view(iconView) {
+                            val backgroundColor = context.getColor(R.color.drawer_background_avatar)
+                            val backgroundRadius = context.resources.getDimension(iconSize.size) / 10
+                            background = createRoundRectDrawable(backgroundColor, backgroundRadius)
+                            layoutWidth = context.resources.getDimensionPixelSize(iconSize.size)
+                            layoutHeight = context.resources.getDimensionPixelSize(iconSize.size)
+                        }
+                        viewRow(titleView) {
+                            setTextColor(context.getColor(R.color.cell_text_primary))
+                            textSize = 16f
+                            typeface = typefaceBold
+                            isAllCaps = true
+                            startScrolling()
+                            updatePadding(top = context.resources.getDimensionPixelSize(R.dimen.navigation_drawer_top_offset))
+                        }
+                        viewRow(subtextView) {
+                            setTextColor(context.getColor(R.color.cell_text_secondary))
+                            textSize = 14f
+                            isAllCaps = true
+                            text = context.getString(R.string.import_no_id_hint)
+                        }
                     }
-                    addWrap(imageView, gravity = Gravity.BOTTOM or Gravity.END)
+                    view(imageView) {
+                        layoutGravityFrame = Gravity.BOTTOM or Gravity.END
+                    }
                     background = GradientDrawable(GradientDrawable.Orientation.TL_BR, intArrayOf(R.color.background_dark.contextColor(), R.color.background_component.contextColor()))
                     fun setExpanded(value: Boolean) {
                         if (closer.isRunning || expander.isRunning) {
@@ -145,6 +142,7 @@ class DrawerFragment : ContainerFragment() {
                         }
                         if (value) expander.start() else closer.start()
                     }
+
                     val fadeOut = ObjectAnimator.ofFloat(iconView, "alpha", 1f, 0f).apply {
                         duration = 240
                         interpolator = AccelerateInterpolator()
@@ -169,7 +167,7 @@ class DrawerFragment : ContainerFragment() {
                                 mainViewModel.closeDrawer()
                             }
                             bindKdenticonAvatar(System.currentTimeMillis().toString(), iconSize)
-//                                subtextView.isMonospaced = false
+            //                                subtextView.isMonospaced = false
                             title = context.getString(R.string.import_no_account_hint).toUpperCase()
                             subtextView.typeface = subtextView.typefaceBold
                             subtext = context.getString(R.string.import_no_id_hint)
@@ -194,7 +192,7 @@ class DrawerFragment : ContainerFragment() {
                         setExpanded(it)
                     }
                     doOnClick { mainViewModel.changeExpandState() }
-            }
+                }
                 spacer {
                     height = 3
                     val divider = Paint().apply {
@@ -204,61 +202,61 @@ class DrawerFragment : ContainerFragment() {
                     doOnDraw { it.drawLine(0f, measuredHeight / 2f, measuredWidth - 0f, measuredHeight / 2f, divider) }
                 }
             }
-            expandable<VerticalLayout> {
-                construct {
-                    spacer { height = 4.dp }
-                    verticalLayout {
-                        mainViewModel.users.observe(viewLifecycleOwner) { list ->
-                            removeAllViews()
-                            list.forEach { user ->
-                                frameLayout {
-                                    updatePadding(right = 16.dp)
-                                    cell {
-                                        setDrawerItemStyle()
-                                        bindUserDrawer(user, IconSize.SMALL)
-                                        iconView.apply {
-                                            layoutMarginStart = (-4).dp
-                                            layoutMarginTop = (-4).dp
-                                            layoutMarginEnd = (-4).dp + componentOffset
-                                            layoutMarginBottom = (-4).dp
-                                            layoutGravity = Gravity.START or Gravity.CENTER_VERTICAL
-                                        }
-//                                    radRT: Float, radLB: Float, radRB: Float, radLT: Float
-                                        doOnClick {
-                                            mainViewModel.closeDrawer()
-                                            showUserSwitchDialog(user)
-                                        }
-                                        doOnLongClick { showUserOptionDialog(user) }
+            // expandable
+            verticalLayout {
+                spacer { height = 4.dp }
+                verticalLayout {
+                    mainViewModel.users.observe(viewLifecycleOwner) { list ->
+                        removeAllViews()
+                        list.forEach { user ->
+                            frameLayout {
+                                updatePadding(right = 16.dp)
+                                cell {
+                                    setDrawerItemStyle()
+                                    bindUserDrawer(user, IconSize.SMALL)
+                                    iconView.apply {
+                                        layoutMarginStart = (-4).dp
+                                        layoutMarginTop = (-4).dp
+                                        layoutMarginEnd = (-4).dp + componentOffset
+                                        layoutMarginBottom = (-4).dp
+                                        layoutGravity = Gravity.START or Gravity.CENTER_VERTICAL
                                     }
+//                                    radRT: Float, radLB: Float, radRB: Float, radLT: Float
+                                    doOnClick {
+                                        mainViewModel.closeDrawer()
+                                        showUserSwitchDialog(user)
+                                    }
+                                    doOnLongClick { showUserOptionDialog(user) }
                                 }
                             }
                         }
                     }
-                    // TODO: 2022/2/24 remove frameLayout
-                    frameLayout {
-                        updatePadding(right = 16.dp)
-                        cell {
-                            setDrawerItemStyle()
-                            title = context.getString(R.string.drawer_import)
-                            icon = R.drawable.ic_cell_add_account.contextDrawable()
-                            doOnClick {
-                                startFragment<ImportFragment>()
-                                mainViewModel.closeDrawer()
-                            }
+                }
+                // TODO: 2022/2/24 remove frameLayout
+                frameLayout {
+                    updatePadding(right = 16.dp)
+                    cell {
+                        setDrawerItemStyle()
+                        title = context.getString(R.string.drawer_import)
+                        icon = R.drawable.ic_cell_add_account.contextDrawable()
+                        doOnClick {
+                            startFragment<ImportFragment>()
+                            mainViewModel.closeDrawer()
                         }
-                    }
-                    spacer { height = 4.dp }
-                    spacer {
-                        height = 3
-                        val divider = Paint().apply {
-                            color = context.getColor(R.color.component_separator)
-                            strokeWidth = 3f
-                        }
-                        doOnDraw { it.drawLine(0f, measuredHeight / 2f, measuredWidth - 0f, measuredHeight / 2f, divider) }
                     }
                 }
-                isExpanded = false
-                mainViewModel.isUsersExpanded.observe(viewLifecycleOwner) { isExpanded = it }
+                spacer { height = 4.dp }
+                spacer {
+                    height = 3
+                    val divider = Paint().apply {
+                        color = context.getColor(R.color.component_separator)
+                        strokeWidth = 3f
+                    }
+                    doOnDraw { it.drawLine(0f, measuredHeight / 2f, measuredWidth - 0f, measuredHeight / 2f, divider) }
+                }
+
+                isVisible = false
+                mainViewModel.isUsersExpanded.observe(viewLifecycleOwner) { isVisible = it }
             }
             verticalLayout {
                 verticalLayout {

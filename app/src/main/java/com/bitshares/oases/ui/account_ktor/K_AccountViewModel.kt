@@ -4,52 +4,37 @@ import android.app.Application
 import android.content.Intent
 import androidx.lifecycle.*
 import bitshareskit.chain.ChainConfig
-import bitshareskit.extensions.*
-import bitshareskit.models.FullAccount
-import bitshareskit.models.PrivateKey
-import bitshareskit.models.PublicKey
-import bitshareskit.objects.*
-import com.bitshares.oases.chain.AccountBalance
 import com.bitshares.oases.chain.IntentParameters
-import com.bitshares.oases.chain.blockchainDatabaseScope
 import com.bitshares.oases.chain.resolveAccountPath
-import com.bitshares.oases.globalWalletManager
-import com.bitshares.oases.preference.old.Graphene
-import com.bitshares.oases.preference.old.Settings
-import com.bitshares.oases.provider.chain_repo.*
-import com.bitshares.oases.provider.local_repo.LocalUserRepository
 import com.bitshares.oases.ui.base.BaseViewModel
 import com.bitshares.oases.ui.base.getJson
 import graphene.chain.K102_AccountObject
 import graphene.protocol.*
-import graphene.rpc.DatabaseClientAPI
-import graphene.rpc.MultiClient
-import graphene.rpc.Node
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import modulon.extensions.livedata.*
-import java.math.BigDecimal
+import modulon.extensions.stdlib.logcat
 
 open class K_AccountViewModel(application: Application) : BaseViewModel(application) {
 
-    private val databaseApi by lazy {
-        MultiClient().run {
-            switch(Node("XN_DELEGATE", "wss://api.btsgo.net/ws"))
-            DatabaseClientAPI(this)
-        }
-    }
+//    private val databaseApi by lazy {
+//        GrapheneClient {
+//            name = "XN_DELEGATE"
+//            url = "wss://api.btsgo.net/ws"
+//        }
+//    }
 
     val accountUID = mutableLiveDataOf(0UL)
 
-    val account = accountUID.mapSuspend {
-        (databaseApi.getObject(it.toAccount()) as K102_AccountObject?).orEmpty()
-    }
+//    val account = accountUID.mapSuspend {
+//        (databaseApi.getObject(it.toAccountIdType()) as K102_AccountObject?).orEmpty()
+//    }
 
     override fun onActivityIntent(intent: Intent?) {
         super.onActivityIntent(intent)
         intent ?: return
-        logcat("onActivityIntent", intent.action)
+        "onActivityIntent ${intent.action}".logcat()
         when (intent.action) {
             Intent.ACTION_MAIN -> return
             Intent.ACTION_VIEW -> {

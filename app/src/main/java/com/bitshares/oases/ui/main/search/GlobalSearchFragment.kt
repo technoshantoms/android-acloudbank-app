@@ -1,20 +1,17 @@
 package com.bitshares.oases.ui.main.search
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import com.bitshares.oases.ui.base.ContainerFragment
-import modulon.layout.recycler.section
+import modulon.layout.lazy.section
 
 class GlobalSearchFragment : ContainerFragment() {
 
     private val viewModel: GlobalSearchViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupAction {
             titleConnectionState("Global Search")
-            networkStateMenu()
+            websocketStateMenu()
             walletStateMenu()
         }
         setupRecycler {

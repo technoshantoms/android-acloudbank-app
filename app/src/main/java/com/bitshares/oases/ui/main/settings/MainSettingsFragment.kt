@@ -1,12 +1,12 @@
 package com.bitshares.oases.ui.main.settings
 
-import android.os.Bundle
 import android.view.Gravity
-import android.view.View
+import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import bitshareskit.extensions.nameOrEmpty
+import bitshareskit.objects.AccountObject
 import com.bitshares.oases.R
 import com.bitshares.oases.database.entities.User
 import com.bitshares.oases.extensions.compat.*
@@ -18,33 +18,38 @@ import com.bitshares.oases.ui.about.AboutFragment
 import com.bitshares.oases.ui.account.importer.ImportFragment
 import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.base.*
+import com.bitshares.oases.ui.intro.IntroFragment
 import com.bitshares.oases.ui.main.MainViewModel
 import com.bitshares.oases.ui.settings.appearance.AppearanceSettingsFragment
+import com.bitshares.oases.ui.settings.network.NetworkSettingsFragment
 import com.bitshares.oases.ui.settings.node.NodeSettingsFragment
-import com.bitshares.oases.ui.settings.showLanguageSettingDialog
 import com.bitshares.oases.ui.settings.storage.StorageSettingsFragment
 import com.bitshares.oases.ui.testlab.TestLabFragment
+import com.bitshares.oases.ui.testlab.testSettings
 import com.bitshares.oases.ui.wallet.WalletSettingsFragment
 import com.bitshares.oases.ui.wallet.showUserOptionDialog
 import com.bitshares.oases.ui.wallet.showUserSwitchDialog
-import modulon.component.IconSize
-import modulon.component.buttonStyle
+import modulon.component.cell.ComponentCell
+import modulon.component.cell.IconSize
+import modulon.component.cell.buttonStyle
+import modulon.component.cell.toggleEnd
+import modulon.extensions.compat.recreateActivity
 import modulon.extensions.compat.startUriBrowser
 import modulon.extensions.livedata.distinctUntilChangedBy
 import modulon.extensions.view.*
 import modulon.extensions.viewbinder.*
-import modulon.layout.recycler.*
-import modulon.layout.recycler.containers.submitList
+import modulon.layout.lazy.*
 
 class MainSettingsFragment : ContainerFragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setupRecycler {
+    override fun ViewGroup.onCreateView() {
+        recyclerLayout {
+            testSettings()
             section {
                 cell {
+                    bindAccountV3(AccountObject.EMPTY, true, IconSize.COMPONENT_1)
                     mainViewModel.userAccount.distinctUntilChangedBy { it.nameOrEmpty }.observe(viewLifecycleOwner) {
                         if (it != null) {
                             bindAccountV3(it, true, IconSize.COMPONENT_1)
@@ -52,9 +57,10 @@ class MainSettingsFragment : ContainerFragment() {
                         }
                     }
                 }
-                mainViewModel.userAccount.distinctUntilChangedBy { it.nameOrEmpty }.observe(viewLifecycleOwner) {
-                    isVisible = it != null
-                }
+                // FIXME: 2022/5/3
+//                mainViewModel.userAccount.distinctUntilChangedBy { it.nameOrEmpty }.observe(viewLifecycleOwner) {
+//                    isVisible = it != null
+//                }
             }
             section {
                 cells {
@@ -117,7 +123,6 @@ class MainSettingsFragment : ContainerFragment() {
                         doOnClick { if (it != null) startImport() else startImport() }
                     }
                 }
-                isVisible = false
                 mainViewModel.userCurrent.observe { isVisible = it != null }
             }
             section {
@@ -143,7 +148,6 @@ class MainSettingsFragment : ContainerFragment() {
                         doOnClick { if (it != null) startMembership(it.uid) else startImport() }
                     }
                 }
-                isVisible = false
                 mainViewModel.userCurrent.observe { isVisible = it != null }
             }
             section {
@@ -173,10 +177,16 @@ class MainSettingsFragment : ContainerFragment() {
                     doOnThrottledClick { startFragment<NodeSettingsFragment>() }
                 }
                 cell {
+                    text = "Ktor" + context.getString(R.string.node_settings_title)
+//                    subtext = context.getString(R.string.node_settings_hint)
+                    icon = R.drawable.ic_cell_nodes.contextDrawable()
+                    doOnThrottledClick { startFragment<NetworkSettingsFragment>() }
+                }
+                cell {
                     title = context.getString(R.string.language_settings_title)
 //                    subtext = "Languages and locals"
                     icon = R.drawable.ic_cell_language.contextDrawable()
-                    doOnThrottledClick { showLanguageSettingDialog() }
+                    doOnThrottledClick { startLanguageSettingDialog() }
                 }
             }
             section {
@@ -186,7 +196,7 @@ class MainSettingsFragment : ContainerFragment() {
                     icon = R.drawable.ic_cell_help.contextDrawable()
                     doOnThrottledClick {
                         startUriBrowser(AppConfig.HELP_URL.toUri())
-                        mainViewModel.closeDrawer()
+//                        mainViewModel.closeDrawer()
                     }
                 }
                 cell {
@@ -194,7 +204,7 @@ class MainSettingsFragment : ContainerFragment() {
                     icon = R.drawable.ic_cell_about.contextDrawable()
                     doOnThrottledClick {
                         startFragment<AboutFragment>()
-                        mainViewModel.closeDrawer()
+//                        mainViewModel.closeDrawer()
                     }
                 }
                 cell {
@@ -202,7 +212,7 @@ class MainSettingsFragment : ContainerFragment() {
                     icon = R.drawable.ic_cell_test_lab.contextDrawable()
                     doOnThrottledClick {
                         startFragment<TestLabFragment>()
-                        mainViewModel.closeDrawer()
+//                        mainViewModel.closeDrawer()
                     }
                 }
             }

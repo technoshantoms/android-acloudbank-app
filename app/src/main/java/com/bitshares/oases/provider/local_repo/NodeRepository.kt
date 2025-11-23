@@ -5,11 +5,14 @@ import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import bitshareskit.chain.ChainConfig
 import com.bitshares.oases.database.LocalDatabase
+import com.bitshares.oases.database.entities.BitsharesNode
 import com.bitshares.oases.database.entities.Node
+import com.bitshares.oases.database.local_daos.BitsharesNodeDao
 import com.bitshares.oases.netowrk.java_websocket.NetworkService
 import com.bitshares.oases.preference.old.Settings
 import modulon.extensions.livedata.withDefault
 
+@Deprecated("removed", replaceWith = ReplaceWith("BitsharesNodeRepository", "com.bitshares.oases.provider.local_repo.BitsharesNodeRepository"))
 object NodeRepository {
 
     private val nodeDao = LocalDatabase.INSTANCE.nodeDao()
@@ -33,6 +36,14 @@ object NodeRepository {
     val currentSelectedNodeId = Settings.KEY_CURRENT_NODE_ID
     val currentNodeId = NetworkService.connectionLive.map { it.node.id }.distinctUntilChanged().withDefault { ChainConfig.EMPTY_INSTANCE.toInt() }
 
+}
 
+// TODO: 2022/4/14
+object BitsharesNodeRepository : BitsharesNodeDao by LocalDatabase.INSTANCE.bitsharesNodeDao() {
+
+    suspend fun update(node: BitsharesNode) = update(node.id, node.name, node.url, node.username, node.password)
 
 }
+
+
+

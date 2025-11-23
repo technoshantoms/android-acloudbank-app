@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.transaction.operation_browser
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import com.bitshares.oases.chain.formatCoreAssetBalance
 import com.bitshares.oases.chain.operationNameStringResMap
@@ -14,15 +12,14 @@ import modulon.extensions.text.buildContextSpannedString
 import modulon.extensions.view.doOnClick
 import modulon.extensions.view.updatePaddingVerticalHalf
 import modulon.extensions.viewbinder.cell
-import modulon.layout.recycler.section
+import modulon.layout.lazy.section
 import java.text.DateFormat
 
 class OperationInfoFragment : ContainerFragment() {
 
     private val viewModel: OperationViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
 
         setupRecycler {
             section {

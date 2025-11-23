@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.account.voting
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import bitshareskit.objects.AccountObject
@@ -10,20 +8,19 @@ import com.bitshares.oases.extensions.compat.startAccountBrowser
 import com.bitshares.oases.extensions.viewbinder.bindAccountV3
 import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.base.startAccountPicker
-import modulon.component.IconSize
-import modulon.component.buttonStyle
-import modulon.component.toggleEnd
+import modulon.component.cell.IconSize
+import modulon.component.cell.buttonStyle
+import modulon.component.cell.toggleEnd
 import modulon.extensions.view.doOnClick
 import modulon.extensions.viewbinder.cell
 import modulon.extensions.viewbinder.hint
-import modulon.layout.recycler.section
+import modulon.layout.lazy.section
 
 class VotingFragment_Proxy : ContainerFragment() {
 
     private val viewModel: VotingViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupRecycler {
             section {
                 header = context.getString(R.string.voting_proxy_title)

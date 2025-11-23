@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.main.explore
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import bitshareskit.objects.WitnessObject
@@ -15,11 +13,11 @@ import com.bitshares.oases.ui.account.voting.VotingViewModel
 import com.bitshares.oases.ui.asset.picker.AssetPickerViewModel
 import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.main.MainViewModel
-import modulon.component.ComponentCell
+import modulon.component.cell.ComponentCell
 import modulon.extensions.view.doOnClick
 import modulon.extensions.view.doOnLongClick
 import modulon.extensions.view.updatePaddingVerticalHalf
-import modulon.layout.recycler.*
+import modulon.layout.lazy.*
 
 class ExploreFragment_Witness : ContainerFragment() {
 
@@ -30,8 +28,7 @@ class ExploreFragment_Witness : ContainerFragment() {
     private val accountSearchingViewModel: AccountPickerViewModel by activityViewModels()
     private val assetSearchingViewModel: AssetPickerViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupRecycler {
             section {
                 header = context.getString(R.string.voting_active_witness)
@@ -43,7 +40,7 @@ class ExploreFragment_Witness : ContainerFragment() {
                         doOnLongClick { showWitnessBrowserDialog(it) }
                     }
                     distinctItemsBy { it.uid }
-                    votingViewModel.activeWitnessesFiltered.observe(viewLifecycleOwner) { adapter.submitList(it) }
+                    votingViewModel.activeWitnessesFiltered.observe(viewLifecycleOwner) { submitList(it) }
                 }
                 votingViewModel.activeWitnessesFiltered.observe(viewLifecycleOwner) { isVisible = it.isNotEmpty() }
             }
@@ -57,7 +54,7 @@ class ExploreFragment_Witness : ContainerFragment() {
                         doOnLongClick { showWitnessBrowserDialog(it) }
                     }
                     distinctItemsBy { it.uid }
-                    votingViewModel.standbyWitnessesFiltered.observe(viewLifecycleOwner) { adapter.submitList(it) }
+                    votingViewModel.standbyWitnessesFiltered.observe(viewLifecycleOwner) { submitList(it) }
                 }
                 votingViewModel.standbyWitnessesFiltered.observe(viewLifecycleOwner) { isVisible = it.isNotEmpty() }
             }

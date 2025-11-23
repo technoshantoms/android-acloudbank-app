@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.account_ktor.browser
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import com.bitshares.oases.R
 import com.bitshares.oases.chain.Clipboard.LABEL_ACCOUNT_NAME
@@ -14,14 +12,13 @@ import modulon.extensions.text.toStringOrEmpty
 import modulon.extensions.view.doOnLongClick
 import modulon.extensions.view.updatePaddingVerticalHalf
 import modulon.extensions.viewbinder.cell
-import modulon.layout.recycler.section
+import modulon.layout.lazy.section
 
 class K_AccountBrowserFragment_Info : ContainerFragment() {
 
     private val viewModel: K_AccountViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
 
         setupRecycler {
             // account container
@@ -40,19 +37,19 @@ class K_AccountBrowserFragment_Info : ContainerFragment() {
                 cell {
                     updatePaddingVerticalHalf()
                     title = context.getString(R.string.account_info_name)
-                    viewModel.account.observe(viewLifecycleOwner) {
-                        subtitle = it?.name ?: ""
-                        doOnLongClick { setClipboardToast(LABEL_ACCOUNT_NAME, subtitle.toString()) }
-                    }
+//                    viewModel.account.observe(viewLifecycleOwner) {
+//                        subtitle = it?.name ?: ""
+//                        doOnLongClick { setClipboardToast(LABEL_ACCOUNT_NAME, subtitle.toString()) }
+//                    }
                 }
                 cell {
                     updatePaddingVerticalHalf()
                     title = context.getString(R.string.account_info_graphene_id)
 //                    subtitleView.typeface = typefaceMonoRegular
-                    viewModel.account.observe(viewLifecycleOwner) {
-                        subtitle = it?.id.toStringOrEmpty()
-                        doOnLongClick { setClipboardToast(LABEL_GRAPHENE_ID, subtitle.toString()) }
-                    }
+//                    viewModel.account.observe(viewLifecycleOwner) {
+//                        subtitle = it?.id.toStringOrEmpty()
+//                        doOnLongClick { setClipboardToast(LABEL_GRAPHENE_ID, subtitle.toString()) }
+//                    }
                 }
 //                cell {
 //                    updatePaddingVerticalHalf()

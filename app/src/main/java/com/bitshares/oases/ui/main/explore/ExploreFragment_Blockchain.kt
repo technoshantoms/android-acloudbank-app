@@ -1,8 +1,6 @@
 package com.bitshares.oases.ui.main.explore
 
-import android.os.Bundle
 import android.text.TextUtils
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.distinctUntilChanged
@@ -23,9 +21,9 @@ import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.base.startFragment
 import com.bitshares.oases.ui.main.MainViewModel
 import com.bitshares.oases.ui.main.search.GlobalSearchFragment
-import modulon.component.ComponentCell
-import modulon.component.IconSize
-import modulon.component.buttonStyle
+import modulon.component.cell.ComponentCell
+import modulon.component.cell.IconSize
+import modulon.component.cell.buttonStyle
 import modulon.extensions.animation.rotation45
 import modulon.extensions.font.typefaceMonoRegular
 import modulon.extensions.livedata.combineNonNull
@@ -35,7 +33,7 @@ import modulon.extensions.view.doOnClick
 import modulon.extensions.view.updatePaddingVerticalHalf
 import modulon.extensions.viewbinder.cell
 import modulon.extensions.viewbinder.startScrolling
-import modulon.layout.recycler.*
+import modulon.layout.lazy.*
 import java.text.DateFormat
 
 class ExploreFragment_Blockchain : ContainerFragment() {
@@ -47,8 +45,7 @@ class ExploreFragment_Blockchain : ContainerFragment() {
     private val accountSearchingViewModel: AccountPickerViewModel by activityViewModels()
     private val assetSearchingViewModel: AssetPickerViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupRecycler {
             section {
                 cell {
@@ -136,10 +133,10 @@ class ExploreFragment_Blockchain : ContainerFragment() {
                         subtitle = it
                     }
                     allowMultiLine = true
-//                                                viewModel.blockTimeOffset.observe(viewLifecycleOwner) {
-//                                                    val sec = it.toInt() / 1000
-//                                                    subtitleView.textWithVisibility = if (sec == 0) context.getString(R.string.chain_explore_block_time_now) else context.getString(R.string.chain_explore_block_time_ago, formatTimeStringFromSec(sec))
-//                                                }
+//                    viewModel.blockTimeOffset.observe(viewLifecycleOwner) {
+//                        val sec = it.toInt() / 1000
+//                        subtitleView.textWithVisibility = if (sec == 0) context.getString(R.string.chain_explore_block_time_now) else context.getString(R.string.chain_explore_block_time_ago, formatTimeStringFromSec(sec))
+//                    }
                 }
                 cell {
                     updatePaddingVerticalHalf()
@@ -197,7 +194,7 @@ class ExploreFragment_Blockchain : ContainerFragment() {
                     }
                     distinctItemsBy { it.blockNum }
                     distinctContentBy { it }
-                    viewModel.recentBlocksFiltered.observe(viewLifecycleOwner) { adapter.submitList(it) }
+                    viewModel.recentBlocksFiltered.observe(viewLifecycleOwner) { submitList(it) }
                 }
                 isVisible = false
                 combineNonNull(viewModel.recentBlocksFiltered, viewModel.isBlockHistory).observe(viewLifecycleOwner) { (list, show) -> isVisible = list.isNotEmpty() && show }
@@ -214,7 +211,7 @@ class ExploreFragment_Blockchain : ContainerFragment() {
                     }
                     distinctItemsBy { it.hashCode() }
                     distinctContentBy { it }
-                    viewModel.opListLive.observe(viewLifecycleOwner) { adapter.submitList(it) }
+                    viewModel.opListLive.observe(viewLifecycleOwner) { submitList(it) }
                 }
                 isVisible = false
                 combineNonNull(viewModel.opListLive, viewModel.isBlockHistory).observe(viewLifecycleOwner) { (list, show) -> isVisible = list.isNotEmpty() && !show }

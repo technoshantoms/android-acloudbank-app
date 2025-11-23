@@ -10,7 +10,7 @@ import com.bitshares.oases.globalPreferenceManager
 import com.bitshares.oases.preference.DarkMode
 import com.bitshares.oases.preference.old.Graphene
 import com.bitshares.oases.preference.old.Settings
-import modulon.component.toggleEnd
+import modulon.component.cell.toggleEnd
 import modulon.dialog.button
 import modulon.dialog.section
 import modulon.extensions.charset.EMPTY_SPACE
@@ -45,11 +45,9 @@ fun Union.showDarkModeSelectDialog() = showBottomDialog {
             cell {
                 customViewStart = create<RadioView> {
                     setColors(context.getColor(R.color.component_disabled), context.getColor(R.color.component))
-                    setFrameParams {
-                        width =  context.resources.getDimensionPixelSize(modulon.R.dimen.icon_size_tiny)
-                        height = context.resources.getDimensionPixelSize(modulon.R.dimen.icon_size_tiny)
-                        gravity = Gravity.START or Gravity.CENTER_VERTICAL
-                    }
+                    layoutWidth = context.resources.getDimensionPixelSize(modulon.R.dimen.icon_size_tiny)
+                    layoutHeight = context.resources.getDimensionPixelSize(modulon.R.dimen.icon_size_tiny)
+                    layoutGravityFrame = Gravity.START or Gravity.CENTER_VERTICAL
                     globalPreferenceManager.DARK_MODE.observe(viewLifecycleOwner) {
                         setChecked(index == it.ordinal, true)
                     }
@@ -72,7 +70,7 @@ fun Union.showFeeReservedDialog() = showBottomDialog {
         cell {
             updatePaddingVerticalV6()
             title = context.getString(R.string.appearance_settings_fee_reserved_amount)
-            custom {
+            customHorizontal {
                 field {
                     inputType = InputTypeExtended.TYPE_NUMBER_DECIMAL
                     transformationMethod = TABULAR_TRANSFORMATION_METHOD

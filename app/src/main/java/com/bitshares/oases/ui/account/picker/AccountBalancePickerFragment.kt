@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.account.picker
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import bitshareskit.objects.AccountBalanceObject
@@ -13,20 +11,19 @@ import com.bitshares.oases.extensions.viewbinder.bindAccountBalance
 import com.bitshares.oases.ui.account.AccountViewModel
 import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.base.putJson
-import modulon.component.ComponentCell
-import modulon.extensions.compat.finish
+import modulon.component.cell.ComponentCell
+import modulon.extensions.compat.finishActivity
 import modulon.extensions.view.doOnClick
 import modulon.extensions.view.doOnLongClick
-import modulon.layout.actionbar.subtitle
-import modulon.layout.recycler.*
+import modulon.component.appbar.subtitle
+import modulon.layout.lazy.*
 import java.util.*
 
 class AccountBalancePickerFragment : ContainerFragment() {
 
     private val viewModel: AccountViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupAction {
             titleConnectionState(context.getString(R.string.account_balance_title))
             viewModel.isPicker = true
@@ -39,14 +36,14 @@ class AccountBalancePickerFragment : ContainerFragment() {
                         bindAccountBalance(it)
                         doOnClick {
                             if (viewModel.isPicker) {
-                                finish { putJson(IntentParameters.AccountBalance.KEY_UID, it.uid) }
+                                finishActivity { putJson(IntentParameters.AccountBalance.KEY_UID, it.uid) }
                             } else startAssetBrowser(it.assetUid)
                         }
                         doOnLongClick { showAccountBalanceBrowserDialog(it) }
                     }
                     distinctItemsBy { it.asset.uid }
                     distinctContentBy { it.balance }
-                    viewModel.accountBalance.observe(viewLifecycleOwner) { adapter.submitList(it) }
+                    viewModel.accountBalance.observe(viewLifecycleOwner) { submitList(it) }
                 }
                 viewModel.accountBalance.observe(viewLifecycleOwner) {
                     isVisible = it.isNotEmpty()

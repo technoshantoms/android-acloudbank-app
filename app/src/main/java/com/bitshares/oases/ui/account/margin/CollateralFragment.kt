@@ -17,8 +17,8 @@ import com.bitshares.oases.extensions.viewbinder.logo
 import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.base.startAssetPicker
 import com.bitshares.oases.ui.transaction.bindTransaction
-import modulon.component.buttonStyle
-import modulon.component.isButtonEnabled
+import modulon.component.cell.buttonStyle
+import modulon.component.cell.isButtonEnabled
 import modulon.dialog.section
 import modulon.extensions.charset.toHexString
 import modulon.extensions.compat.secureWindow
@@ -35,9 +35,9 @@ import modulon.extensions.view.updatePaddingVerticalHalf
 import modulon.extensions.view.updatePaddingVerticalV6
 import modulon.extensions.viewbinder.cell
 import modulon.extensions.viewbinder.hint
-import modulon.layout.actionbar.subtitle
-import modulon.layout.actionbar.title
-import modulon.layout.recycler.section
+import modulon.component.appbar.subtitle
+import modulon.component.appbar.title
+import modulon.layout.lazy.section
 import modulon.union.Union
 import modulon.widget.doOnProgressChanged
 import modulon.widget.doOnTrackingTouchChanged
@@ -53,7 +53,7 @@ class CollateralFragment : ContainerFragment() {
         secureWindow()
         setupAction {
             title(context.getString(R.string.collateral_title))
-            networkStateMenu()
+            websocketStateMenu()
             walletStateMenu()
             viewModel.accountName.observe(viewLifecycleOwner) { subtitle(it.toUpperCase(Locale.ROOT)) }
         }
@@ -144,7 +144,7 @@ class CollateralFragment : ContainerFragment() {
                 header = "Adjust"
                 // TODO: 2020/9/11 pay max debt
                 cell {
-                    custom {
+                    customHorizontal {
                         field {
                             inputType = EditorInfo.TYPE_CLASS_NUMBER or EditorInfo.TYPE_NUMBER_FLAG_DECIMAL
                             transformationMethod = TABULAR_TRANSFORMATION_METHOD
@@ -173,7 +173,7 @@ class CollateralFragment : ContainerFragment() {
                     }
                 }
                 cell {
-                    custom {
+                    customHorizontal {
                         field {
                             inputType = EditorInfo.TYPE_CLASS_NUMBER or EditorInfo.TYPE_NUMBER_FLAG_DECIMAL
                             transformationMethod = TABULAR_TRANSFORMATION_METHOD

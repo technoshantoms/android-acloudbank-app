@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.account.permission
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.distinctUntilChanged
@@ -14,8 +12,8 @@ import com.bitshares.oases.extensions.viewbinder.bindAccountAuth
 import com.bitshares.oases.extensions.viewbinder.bindPublicKey
 import com.bitshares.oases.extensions.viewbinder.feeCell
 import com.bitshares.oases.ui.base.ContainerFragment
-import modulon.layout.actionbar.subtitle
-import modulon.layout.actionbar.title
+import modulon.component.appbar.subtitle
+import modulon.component.appbar.title
 import com.bitshares.oases.ui.transaction.bindTransaction
 import kotlinx.coroutines.launch
 import modulon.dialog.button
@@ -42,12 +40,11 @@ class PermissionFragment : ContainerFragment() {
 
     private val viewModel: PermissionViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         secureWindow()
         setupAction {
             title(context.getString(R.string.permission_settings_title))
-            networkStateMenu()
+            websocketStateMenu()
             walletStateMenu()
             broadcastMenu {
                 doOnClick {
@@ -78,7 +75,7 @@ class PermissionFragment : ContainerFragment() {
             lifecycleScope.launch {
                 if (viewModel.isModified()) {
                     if (showChangesDiscardDialog() && showThresholdCheckDialog()) showPermissionChangeDialog()
-                } else finish()
+                } else finishActivity()
             }
             false
         }

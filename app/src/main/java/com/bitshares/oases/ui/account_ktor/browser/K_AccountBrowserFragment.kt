@@ -11,7 +11,6 @@ import graphene.chain.K102_AccountObject
 import graphene.chain.K217_CollateralBidObject
 import graphene.protocol.PriceType
 import graphene.protocol.emptyIdType
-import graphene.protocol.isObject
 import modulon.extensions.view.StringResTabs
 import modulon.extensions.view.attachEnumsViewPager2
 import modulon.extensions.view.nextView
@@ -34,14 +33,13 @@ class K_AccountBrowserFragment : ContainerFragment() {
         RAW(R.string.tab_raw_data),
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
 
         // TODO: 2022/2/17  distinct between fragments
 //        secureWindow()
         setupAction {
             titleConnectionState(context.getString(R.string.account_browser_title))
-            networkStateMenu()
+            websocketStateMenu()
             walletStateMenu()
 
             val a = K217_CollateralBidObject(
@@ -49,10 +47,10 @@ class K_AccountBrowserFragment : ContainerFragment() {
                 emptyIdType(),
                 PriceType.INVALID
             )
-            
-            if (a.bidder is K102_AccountObject) {
-                a.bidder.blackListedAccounts
-            }
+//
+//            if (a.bidder is K102_AccountObject) {
+//                a.bidder.blackListedAccounts
+//            }
 
 //            menu {
 //                text = context.getString(R.string.account_observe)

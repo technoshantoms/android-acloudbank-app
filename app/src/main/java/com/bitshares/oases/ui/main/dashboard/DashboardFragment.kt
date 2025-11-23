@@ -1,9 +1,7 @@
 package com.bitshares.oases.ui.main.dashboard
 
 import android.content.Context
-import android.os.Bundle
 import android.view.Gravity
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import bitshareskit.entities.LimitOrder
@@ -28,8 +26,7 @@ import com.bitshares.oases.ui.transfer.ScannerFragment
 import com.bitshares.oases.ui.transfer.TransferFragment
 import modulon.UI
 import modulon.component.*
-import modulon.dialog.DialogState
-import modulon.extensions.compat.showBottomDialog
+import modulon.component.cell.*
 import modulon.extensions.font.typefaceBold
 import modulon.extensions.graphics.createSelectorDrawable
 import modulon.extensions.temp.drawShaders
@@ -39,7 +36,8 @@ import modulon.extensions.viewbinder.cell
 import modulon.extensions.viewbinder.horizontalLayout
 import modulon.extensions.viewbinder.noClipping
 import modulon.extensions.viewbinder.verticalLayout
-import modulon.layout.recycler.*
+import modulon.layout.lazy.*
+import modulon.layout.linear.HorizontalView
 
 class DashboardFragment : ContainerFragment() {
 
@@ -49,23 +47,27 @@ class DashboardFragment : ContainerFragment() {
     private class Item(context: Context) : ComponentPaddingCell(context) {
         init {
             verticalLayout {
-                addWrap(iconView, width = resources.getDimensionPixelSize(IconSize.SIZE_5.size), height = resources.getDimensionPixelSize(IconSize.SIZE_5.size), gravity = Gravity.CENTER_HORIZONTAL)
-                addWrap(titleView, gravity = Gravity.CENTER_HORIZONTAL)
-            }
-            titleView.apply {
-                isAllCaps = true
-                typeface = typefaceBold
-                textSize = 15f
+                view(iconView) {
+                    layoutWidth = resources.getDimensionPixelSize(IconSize.SIZE_5.size)
+                    layoutHeight = resources.getDimensionPixelSize(IconSize.SIZE_5.size)
+                    layoutGravityLinear = Gravity.CENTER_HORIZONTAL
+                }
+                view(titleView) {
+                    isAllCaps = true
+                    typeface = typefaceBold
+                    textSize = 15f
+                    layoutGravityLinear = Gravity.CENTER_HORIZONTAL
+                }
             }
             background = createSelectorDrawable(context.getColor(R.color.background), UI.CORNER_RADIUS.dpf)
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupRecycler {
             section {
-                horizontalLayout {
+                isolated<HorizontalView> {
+                    layoutWidth = MATCH_PARENT
                     noClipping()
                     view<Item> {
                         drawShaders()

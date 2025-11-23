@@ -4,6 +4,7 @@ import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.Gravity
 import android.widget.LinearLayout
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import bitshareskit.chain.ChainConfig
@@ -17,6 +18,7 @@ import bitshareskit.operations.Operation
 import com.bitshares.oases.R
 import com.bitshares.oases.chain.AccountBalance
 import com.bitshares.oases.chain.CommitteeMember
+import com.bitshares.oases.database.entities.BitsharesNode
 import com.bitshares.oases.database.entities.Node
 import com.bitshares.oases.database.entities.User
 import com.bitshares.oases.database.entities.toAccount
@@ -27,13 +29,14 @@ import com.bitshares.oases.preference.old.Settings
 import com.caverock.androidsvg.SVG
 import kdenticon.HashUtils
 import kdenticon.Kdenticon
-import modulon.component.BaseCell
-import modulon.component.ComponentCell
-import modulon.component.IconSize
-import modulon.component.tables
+import modulon.component.cell.BaseCell
+import modulon.component.cell.ComponentCell
+import modulon.component.cell.IconSize
+import modulon.component.cell.tables
 import modulon.extensions.font.typefaceMonoRegular
 import modulon.extensions.graphics.createRoundRectDrawable
 import modulon.extensions.text.*
+import modulon.extensions.view.backgroundTintColor
 import modulon.extensions.view.doOnClick
 import modulon.extensions.view.dp
 import modulon.extensions.viewbinder.startScrolling
@@ -372,6 +375,72 @@ fun ComponentCell.bindNode(node: Node) {
     }
 }
 
+fun ComponentCell.bindNode(node: BitsharesNode) {
+    title = buildContextSpannedString {
+        append(node.name.ifBlank { Uri.parse(node.url).host })
+        when (node.chainId) {
+            ChainConfig.Chain.CHAIN_ID_MAIN_NET -> appendSimpleColoredSpan(context.getString(R.string.chain_type_bitshares_mainnet).toUpperCase(), context.getColor(R.color.tag_component))
+            ChainConfig.Chain.CHAIN_ID_TEST_NET -> appendSimpleColoredSpan(context.getString(R.string.chain_type_bitshares_testnet).toUpperCase(), context.getColor(R.color.tag_component_warning))
+            else -> appendSimpleColoredSpan(context.getString(R.string.chain_type_unknown_network).toUpperCase(), context.getColor(R.color.tag_component_inactive))
+        }
+    }
+    titleView.startScrolling()
+    subtext = node.url
+    subtitle = "${node.latency} ${context.getString(R.string.node_settings_latency_ms)}"
+    subtitleView.textColor = context.getColor(R.color.cell_text_secondary)
+}
+
+fun ComponentCell.bindNode(node: BitsharesNode, isSelected: Boolean, isActive: Boolean) {
+    title = buildContextSpannedString {
+        append(node.name.ifBlank { node.url.toUri().host })
+        appendBlankSpan()
+        appendScaled(0.9f) {
+            when (node.chainId) {
+                ChainConfig.Chain.CHAIN_ID_MAIN_NET ->
+                    appendSimpleColoredSpan(context.getString(R.string.chain_type_bitshares_mainnet).toUpperCase(), context.getColor(R.color.tag_component))
+                ChainConfig.Chain.CHAIN_ID_TEST_NET ->
+                    appendSimpleColoredSpan(context.getString(R.string.chain_type_bitshares_testnet).toUpperCase(), context.getColor(R.color.tag_component_warning))
+                else ->
+                    appendSimpleColoredSpan(context.getString(R.string.chain_type_unknown_network).toUpperCase(), context.getColor(R.color.tag_component_inactive))
+            }
+        }
+    }
+    textView.startScrolling()
+    subtext = node.url
+    when (node.latency) {
+        BitsharesNode.LATENCY_CONNECTING -> {
+            subtitle = context.getString(R.string.node_settings_connecting)
+            subtitleView.textColor = context.getColor(R.color.cell_text_secondary)
+        }
+        BitsharesNode.LATENCY_TIMEOUT, BitsharesNode.LATENCY_UNRESOLVED, BitsharesNode.LATENCY_UNKNOWN -> {
+            subtitle = context.getString(R.string.node_settings_timeout)
+            subtitleView.textColor = context.getColor(R.color.component_error)
+        }
+        else -> {
+            subtitle = "${node.latency} ${context.getString(R.string.node_settings_latency_ms)}"
+            subtitleView.textColor = context.getColor(R.color.cell_text_secondary)
+
+        }
+//            when {
+//                isActive -> {
+//                    subtitle = "${context.getString(R.string.node_settings_connected)}, ${context.getString(R.string.node_settings_latency)} ${node.latency} ${context.getString(R.string.node_settings_latency_ms)}"
+//                    subtitleView.textColor = context.getColor(R.color.component_active)
+//                }
+//                isSelected -> {
+//                    subtitle = context.getString(R.string.node_settings_connecting) + "${context.getString(R.string.node_settings_latency)} ${node.latency} ${context.getString(R.string.node_settings_latency_ms)}"
+//                    subtitleView.textColor = context.getColor(R.color.cell_text_secondary)
+//                }
+//                else -> {
+//                    subtitle = "${context.getString(R.string.node_settings_latency)} ${node.latency} ${context.getString(R.string.node_settings_latency_ms)}"
+//                    subtitleView.textColor = context.getColor(R.color.cell_text_secondary)
+//                }
+//            }
+    }
+    checkView.backgroundTintColor = context.getColor(if (isSelected && !isActive) R.color.component_warning else R.color.component)
+    isChecked = isSelected || isActive
+}
+
+
 // operation
 fun ComponentCell.bindOperation(op: Operation) {
     doOnClick()
@@ -395,12 +464,13 @@ fun ComponentCell.bindOperation(op: Operation) {
 //            }
 //        }
 //    }
-    subtext(0) {
-        startScrolling()
-        text = buildContextSpannedString {
-            appendOperationDescriptionSpan(op)
-        }
+    subtext = buildContextSpannedString {
+        appendOperationDescriptionSpan(op)
     }
+    // FIXME: 2022/4/24  
+//    subtext(0) {
+//        startScrolling()
+//    }
     subtext(1) {
         startScrolling()
         text = buildContextSpannedString {

@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.main.explore
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import bitshareskit.models.*
 import com.bitshares.oases.chain.formatCoreAssetAmount
@@ -14,12 +12,12 @@ import com.bitshares.oases.ui.account.voting.VotingViewModel
 import com.bitshares.oases.ui.asset.picker.AssetPickerViewModel
 import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.main.MainViewModel
-import modulon.component.ComponentCell
+import modulon.component.cell.ComponentCell
 import modulon.extensions.charset.BLANK_SPACE
 import modulon.extensions.text.buildContextSpannedString
 import modulon.extensions.view.doOnClick
 import modulon.extensions.view.updatePaddingVerticalHalf
-import modulon.layout.recycler.*
+import modulon.layout.lazy.*
 
 class ExploreFragment_FeeSchedule : ContainerFragment() {
 
@@ -30,8 +28,7 @@ class ExploreFragment_FeeSchedule : ContainerFragment() {
     private val accountSearchingViewModel: AccountPickerViewModel by activityViewModels()
     private val assetSearchingViewModel: AssetPickerViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         setupRecycler {
             section {
                 header = "Fee Paramaters"
@@ -108,7 +105,7 @@ class ExploreFragment_FeeSchedule : ContainerFragment() {
                             else -> ""
                         }
                     }
-                    exploreViewModel.feeParameters.observe { adapter.submitList(it) }
+                    exploreViewModel.feeParameters.observe { submitList(it) }
                 }
             }
             logo()

@@ -1,7 +1,5 @@
 package com.bitshares.oases.ui.faucet
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
@@ -23,14 +21,14 @@ import com.bitshares.oases.provider.local_repo.LocalUserRepository
 import com.bitshares.oases.ui.base.ContainerFragment
 import com.bitshares.oases.ui.wallet.startWalletUnlock
 import kotlinx.coroutines.launch
-import modulon.component.buttonStyle
+import modulon.component.cell.buttonStyle
 import modulon.dialog.DialogState
 import modulon.dialog.button
 import modulon.dialog.section
 import modulon.dialog.updateButton
 import modulon.extensions.charset.EMPTY_SPACE
 import modulon.extensions.compat.activity
-import modulon.extensions.compat.finish
+import modulon.extensions.compat.finishActivity
 import modulon.extensions.compat.secureWindow
 import modulon.extensions.compat.showBottomDialog
 import modulon.extensions.font.typefaceMonoRegular
@@ -41,19 +39,18 @@ import modulon.extensions.text.buildContextSpannedString
 import modulon.extensions.text.toStringOrEmpty
 import modulon.extensions.view.*
 import modulon.extensions.viewbinder.cell
-import modulon.layout.recycler.section
+import modulon.layout.lazy.section
 import modulon.union.Union
 
 class FaucetFragment : ContainerFragment() {
 
     val viewModel: FaucetViewModel by activityViewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView() {
         secureWindow()
         setupAction {
             titleConnectionState(getString(R.string.faucet_register_title))
-            networkStateMenu()
+            websocketStateMenu()
             walletStateMenu()
         }
         setupRecycler {
@@ -233,7 +230,7 @@ fun Union.showFaucetRegisterDialog(info: FaucetRegister) = showBottomDialog {
                                             )
                                             blockchainDatabaseScope.launch { LocalUserRepository.add(globalWalletManager, user) }
                                         }
-                                        finish()
+                                        finishActivity()
                                         dismiss()
                                         activity
                                     } else {

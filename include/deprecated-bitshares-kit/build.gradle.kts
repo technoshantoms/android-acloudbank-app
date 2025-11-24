@@ -41,7 +41,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     implementation(project(":include:deprecated-java-json"))
 
-    implementation(project(":include:bitshares-kit:core"))
+    //implementation(project(":include:bitshares-kit:core"))
 
     implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
 }

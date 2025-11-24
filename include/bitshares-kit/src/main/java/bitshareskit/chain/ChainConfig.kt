@@ -41,14 +41,14 @@ object ChainConfig {
         const val CORE_ASSET_ID = "1.3.0"
         const val CORE_ASSET_INSTANCE = 0L
         const val CORE_ASSET_SYMBOL = "CBANK"
-        const val CORE_ASSET_SYMBOL_TEST = "TEST"
+        const val CORE_ASSET_SYMBOL_TEST = "CBANK"
         const val CORE_ASSET_PRECISION = 5
     }
 
     object Chain {
-        const val CHAIN_ID_MAIN_NET: String = "4018d7844c78f6a6c41c6a552b898022310fc5dec06da467ee7905a8dad512c8"
-        const val CHAIN_ID_TEST_NET: String = "39f5e2ede1f8bc1a3a54a7914414e3779e33193f1f5693510e73cb7a87617447"
-        const val CHAIN_ID_LOCAL_NET: String = "c3807ea4b7d28da76249c6be53dc6342a12888327aab9d66ac1d53e31e797ae3"
+        const val CHAIN_ID_MAIN_NET: String = "d1de01c8e1899bac275fc7ef98eecfc7542e7a74d686bbf3d39ca66ef7ed4df3"
+        const val CHAIN_ID_TEST_NET: String = "d1de01c8e1899bac275fc7ef98eecfc7542e7a74d686bbf3d39ca66ef7ed4df3"
+        const val CHAIN_ID_LOCAL_NET: String = "d1de01c8e1899bac275fc7ef98eecfc7542e7a74d686bbf3d39ca66ef7ed4df3"
     }
 
 //    const val GRAPHENE_CHAIN_ID: String = "b8d1603965b3eb1acba27e62ff59f74efa3154d43a4188d381088ac7cdf35539"
@@ -65,7 +65,7 @@ object ChainConfig {
     const val TWO_YEAR_MILLIS = 63113904000L
 
     const val CHAIN_SYMBOL_MAIN_NET = "CBANK"
-    const val CHAIN_SYMBOL_TEST_NET = "TEST"
+    const val CHAIN_SYMBOL_TEST_NET = "CBANK"
 
 
     const val GRAPHENE_DEFAULT_WITNESS_PAY_PER_BLOCK = 1000000

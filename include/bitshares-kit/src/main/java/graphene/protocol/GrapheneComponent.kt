@@ -1,0 +1,4 @@
+
+package graphene.protocol
+
+interface GrapheneComponent

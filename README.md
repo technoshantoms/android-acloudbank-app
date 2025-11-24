@@ -4,7 +4,7 @@
 
 ## Captures
 
-<p><img src="depoly/captures/device-light-01.png" width="30%" />  </p>
+<p><img src="deploy/captures/device-light-01.png" width="30%" />  </p>
 
 ## Features
 
